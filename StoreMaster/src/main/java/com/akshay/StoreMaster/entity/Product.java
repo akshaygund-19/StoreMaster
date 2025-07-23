@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String product_ID;
+    private Integer product_ID;
 
     private String name;
 
