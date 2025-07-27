@@ -6,6 +6,7 @@ import com.akshay.StoreMaster.entity.Product;
 import com.akshay.StoreMaster.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -115,5 +116,23 @@ public class ProductService {
             responseDTO.setStock_quantity(product.getStock_quantity());
             return responseDTO;
         }).collect(Collectors.toList());
+    }
+
+    public ProductResponseDTO getProduct(int productId){
+       Optional<Product> product = productRepository.findById(productId);
+
+       if (product.isEmpty()){
+           throw new IllegalArgumentException("Product Not found: ID{}" + productId);
+       }
+
+       Product foundProduct = product.get();
+       ProductResponseDTO responseDTO = new ProductResponseDTO();
+        responseDTO.setProduct_ID(foundProduct.getProduct_ID());
+        responseDTO.setName(foundProduct.getName());
+        responseDTO.setPrice(foundProduct.getPrice());
+        responseDTO.setDescription(foundProduct.getDescription());
+        responseDTO.setCategory(foundProduct.getCategory());
+        responseDTO.setStock_quantity(foundProduct.getStock_quantity());
+        return responseDTO;
     }
 }
