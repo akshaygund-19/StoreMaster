@@ -5,6 +5,7 @@ import com.akshay.StoreMaster.dto.UserRegistrationDTO;
 import com.akshay.StoreMaster.dto.UserResponseDTO;
 import com.akshay.StoreMaster.repository.UserRepository;
 import com.akshay.StoreMaster.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +26,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> addUser(@RequestBody UserRegistrationDTO userRegistrationDTO) throws Exception{
+    public String addUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) throws Exception{
         var user = userService.registerUser(userRegistrationDTO);
-        return ResponseEntity.ok(user);
+        return "Registration Successfully Completed for User: {} " + userRegistrationDTO.getName();
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserLoginDTO userLoginDTO) throws Exception{
         userService.login(userLoginDTO);
-        return ResponseEntity.ok("Login Successful");
+        return ResponseEntity.ok("Logged in Successfully");
     }
 }

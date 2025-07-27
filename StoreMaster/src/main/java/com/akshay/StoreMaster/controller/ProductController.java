@@ -2,7 +2,6 @@ package com.akshay.StoreMaster.controller;
 
 import com.akshay.StoreMaster.dto.ProductRequestDTO;
 import com.akshay.StoreMaster.dto.ProductResponseDTO;
-import com.akshay.StoreMaster.entity.Product;
 import com.akshay.StoreMaster.repository.ProductRepository;
 import com.akshay.StoreMaster.service.ProductService;
 import jakarta.transaction.Transactional;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,5 +49,10 @@ public class ProductController {
     @GetMapping("/getAllProduct")
     public List<ProductResponseDTO> getAllProducts(){
         return productService.getAllProducts();
+    }
+
+    @GetMapping("/get/{productId}")
+    public ProductResponseDTO getProduct(@PathVariable int productId){
+        return productService.getProduct(productId);
     }
 }
