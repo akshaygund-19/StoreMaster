@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,14 +32,14 @@ public class ProductController {
     }
 
     @PutMapping("/update/{productId}")
-    public ResponseEntity<ProductResponseDTO> update(@PathVariable int productId, @RequestBody ProductRequestDTO productRequestDTO){
+    public ResponseEntity<ProductResponseDTO> update(@PathVariable Long productId, @RequestBody ProductRequestDTO productRequestDTO){
         ProductResponseDTO updateProduct = productService.updateProduct(productId, productRequestDTO);
         log.info("Product updated successfully. Id:{}", productId);
         return ResponseEntity.ok(updateProduct);
     }
 
     @DeleteMapping("/delete/{productId}")
-    public ResponseEntity<String> delete(@PathVariable int productId){
+    public ResponseEntity<String> delete(@PathVariable Long productId){
          productService.deleteProduct(productId);
         log.info("Product deleted Successfully ID:{}",productId);
         return ResponseEntity.noContent().build();
@@ -52,7 +51,7 @@ public class ProductController {
     }
 
     @GetMapping("/get/{productId}")
-    public ProductResponseDTO getProduct(@PathVariable int productId){
+    public ProductResponseDTO getProduct(@PathVariable Long productId){
         return productService.getProduct(productId);
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Data
 public class ProductResponseDTO {
-    private int product_ID;
+    private Long product_ID;
 
     private String name;
 
