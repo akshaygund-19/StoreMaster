@@ -48,10 +48,10 @@ public class CartService {
         Cart cart = cartRepository.findByUser(user).orElse(null);
         if (cart == null) {
             log.info("No existing cart found for userId : {}. Creating new cart.", user.getId());
-            cart : new Cart();
+            cart = new Cart();
             cart.setUser(user);
             cart.setCreatedAt(LocalDateTime.now());
-            cart : cartRepository.save(cart);
+            cart = cartRepository.save(cart);
             log.info("New cart created: cartId: {}", cart.getId());
         } else {
             log.info("Existing cart found: cartId: {}", cart.getId());
