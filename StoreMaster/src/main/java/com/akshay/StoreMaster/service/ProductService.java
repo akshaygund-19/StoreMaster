@@ -44,7 +44,7 @@ public class ProductService {
                 Product savedProduct = productRepository.save(product);
 
                 ProductResponseDTO responseDTO = new ProductResponseDTO();
-                responseDTO.setProduct_ID(savedProduct.getProduct_ID());
+                responseDTO.setProduct_ID(savedProduct.getProduct_Id());
                 responseDTO.setName(savedProduct.getName());
                 responseDTO.setPrice(savedProduct.getPrice());
                 responseDTO.setDescription(savedProduct.getDescription());
@@ -56,7 +56,7 @@ public class ProductService {
     }
 
     //This method updates an existing product’s details after validating input, saving changes to the database, and returning updated product information
-    public ProductResponseDTO updateProduct(int productId, ProductRequestDTO productRequestDTO) {
+    public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
         Optional<Product> checkProduct = productRepository.findById(productId);
         if (checkProduct.isEmpty()) {
             throw new IllegalArgumentException("Product not found ");
@@ -84,7 +84,7 @@ public class ProductService {
         Product savedProduct = productRepository.save(product);
 
         ProductResponseDTO responseDTO = new ProductResponseDTO();
-        responseDTO.setProduct_ID(savedProduct.getProduct_ID());
+        responseDTO.setProduct_ID(savedProduct.getProduct_Id());
         responseDTO.setName(savedProduct.getName());
         responseDTO.setPrice(savedProduct.getPrice());
         responseDTO.setDescription(savedProduct.getDescription());
@@ -93,7 +93,7 @@ public class ProductService {
         return responseDTO;
     }
 
-    public void deleteProduct(int productId){
+    public void deleteProduct(Long productId){
         Optional<Product> checkProduct = productRepository.findById(productId);
         if (checkProduct.isEmpty()){
             throw new IllegalArgumentException("Product not found ");
@@ -108,7 +108,7 @@ public class ProductService {
 
             ProductResponseDTO responseDTO = new ProductResponseDTO();
 
-            responseDTO.setProduct_ID(product.getProduct_ID());
+            responseDTO.setProduct_ID(product.getProduct_Id());
             responseDTO.setPrice(product.getPrice());
             responseDTO.setStock_quantity(product.getStock_quantity());
             responseDTO.setName(product.getName());
@@ -118,7 +118,7 @@ public class ProductService {
         }).collect(Collectors.toList());
     }
 
-    public ProductResponseDTO getProduct(int productId){
+    public ProductResponseDTO getProduct(Long productId){
        Optional<Product> product = productRepository.findById(productId);
 
        if (product.isEmpty()){
@@ -127,7 +127,7 @@ public class ProductService {
 
        Product foundProduct = product.get();
        ProductResponseDTO responseDTO = new ProductResponseDTO();
-        responseDTO.setProduct_ID(foundProduct.getProduct_ID());
+        responseDTO.setProduct_ID(foundProduct.getProduct_Id());
         responseDTO.setName(foundProduct.getName());
         responseDTO.setPrice(foundProduct.getPrice());
         responseDTO.setDescription(foundProduct.getDescription());
