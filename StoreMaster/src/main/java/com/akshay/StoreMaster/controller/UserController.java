@@ -2,7 +2,6 @@ package com.akshay.StoreMaster.controller;
 
 import com.akshay.StoreMaster.dto.UserLoginDTO;
 import com.akshay.StoreMaster.dto.UserRegistrationDTO;
-import com.akshay.StoreMaster.dto.UserResponseDTO;
 import com.akshay.StoreMaster.repository.UserRepository;
 import com.akshay.StoreMaster.service.UserService;
 import jakarta.validation.Valid;

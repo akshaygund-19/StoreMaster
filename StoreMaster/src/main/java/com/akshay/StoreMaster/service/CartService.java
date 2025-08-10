@@ -112,4 +112,25 @@ public class CartService {
 //        }
         return new CartResponseDTO(cartItems, cart.getTotalPrice());
     }
+    @Transactional
+    public void removeFromCart(long userId, long productId){
+        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        Optional<CartItem> itemToRemove = cart.getCartItemList().stream()
+                .filter(item -> item.getProduct().getProduct_Id().equals(productId))
+                .findFirst();
+
+        if (itemToRemove.isEmpty()) {
+            throw new RuntimeException("Product with ID: " + productId + " not found in cart");
+        }
+
+        cart.getCartItemList().remove(itemToRemove.get());
+
+        double total = cart.getCartItemList().stream()
+                .mapToDouble(CartItem::getPrice)
+                .sum();
+
+        cart.setTotalPrice(total);
+        cartRepository.save(cart);
+    }
 }
