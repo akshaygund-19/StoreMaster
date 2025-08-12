@@ -5,7 +5,7 @@ import com.akshay.StoreMaster.entity.Cart;
 import com.akshay.StoreMaster.entity.CartItem;
 import com.akshay.StoreMaster.entity.Product;
 import com.akshay.StoreMaster.entity.User;
-import com.akshay.StoreMaster.repository.CartItemRepositoty;
+import com.akshay.StoreMaster.repository.CartItemRepository;
 import com.akshay.StoreMaster.repository.CartRepository;
 import com.akshay.StoreMaster.repository.ProductRepository;
 import com.akshay.StoreMaster.repository.UserRepository;
@@ -27,7 +27,7 @@ public class CartServiceTest {
     @Mock
     private CartRepository cartRepository;
     @Mock
-    private CartItemRepositoty cartItemRepositoty;
+    private CartItemRepository cartItemRepository;
 
     @BeforeEach
     void setUp() {
@@ -63,6 +63,6 @@ public class CartServiceTest {
 
         // Assert
         verify(cartRepository, times(2)).save(any(Cart.class));
-        verify(cartItemRepositoty, never()).save(any(CartItem.class)); // new item is not saved directly
+        verify(cartItemRepository, never()).save(any(CartItem.class)); // new item is not saved directly
     }
 }
