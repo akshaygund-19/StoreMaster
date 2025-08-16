@@ -4,6 +4,7 @@ import com.akshay.StoreMaster.dto.AddCartDTO;
 import com.akshay.StoreMaster.dto.CartResponseDTO;
 import com.akshay.StoreMaster.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +30,11 @@ public class CartController {
     public ResponseEntity<String> removeItem(@PathVariable Long userId, @PathVariable Long productId){
         cartService.removeFromCart(userId,productId);
         return ResponseEntity.ok("Product removed from cart successfully");
+    }
+
+    @DeleteMapping("/clear/{userId}")
+    public ResponseEntity<String> clearCart(@PathVariable Long userId){
+        cartService.clearCart(userId);
+        return ResponseEntity.ok("Cart items removed");
     }
 }

@@ -20,8 +20,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/storeMaster/**").permitAll() // Allow public access to /public
-                        .requestMatchers("/storeMaster/product/add","/storeMaster/product/update/**","storeMaster/product/delete/**").hasRole("ADMIN")
+                        .requestMatchers("/storeMaster/**","/actuator/health").permitAll() // Allow public access to /public
+//                        .requestMatchers("/storeMaster/product/add","/storeMaster/product/update/**","storeMaster/product/delete/**").hasRole("ADMIN")
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .httpBasic(Customizer.withDefaults())

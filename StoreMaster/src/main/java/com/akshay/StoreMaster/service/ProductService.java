@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class ProductService {
         for (ProductRequestDTO productRequestDTO : dtoList) {
             if (productRequestDTO.getName() == null || productRequestDTO.getName().isBlank()) {
                 throw new IllegalArgumentException("Name cannot blank");
-            } else if (productRequestDTO.getPrice() < 0) {
+            } else if (productRequestDTO.getPrice() == null || productRequestDTO.getPrice().compareTo(BigDecimal.ZERO) < 0) {
                 throw new IllegalArgumentException("Price should be positive");
             } else if (productRequestDTO.getStock_quantity() < 0) {
                 throw new IllegalArgumentException("Quantity should be positive");
@@ -67,7 +68,7 @@ public class ProductService {
         if (productRequestDTO.getName() != null || !productRequestDTO.getName().isBlank()) {
             product.setName(productRequestDTO.getName());
         }
-        if (productRequestDTO.getPrice() >= 0) {
+        if (productRequestDTO.getPrice() == null && productRequestDTO.getPrice().compareTo(BigDecimal.ZERO) >= 0) {
             product.setPrice(productRequestDTO.getPrice());
         }
         if (productRequestDTO.getDescription() != null) {
@@ -114,6 +115,7 @@ public class ProductService {
             responseDTO.setName(product.getName());
             responseDTO.setDescription(product.getDescription());
             responseDTO.setStock_quantity(product.getStock_quantity());
+            responseDTO.setCategory(product.getCategory());
             return responseDTO;
         }).collect(Collectors.toList());
     }

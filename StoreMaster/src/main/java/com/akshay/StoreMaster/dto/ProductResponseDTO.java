@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Data
@@ -14,7 +16,7 @@ public class ProductResponseDTO {
 
     private String description;
 
-    private Integer price;
+    private BigDecimal price;
 
     private Integer stock_quantity;
 

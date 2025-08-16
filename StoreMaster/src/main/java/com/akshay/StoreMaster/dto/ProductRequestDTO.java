@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Data
@@ -18,7 +20,7 @@ public class ProductRequestDTO {
     @Size(max = 255, message = "Description can’t exceed 255 characters")
     private String description;
     @Positive(message = "Price Must be positive")
-    private Integer price;
+    private BigDecimal price;
     @Min(value = 0, message = "Stock Quantity Must be non-negative")
     private Integer stock_quantity;
     @NotBlank(message = "Category is required")

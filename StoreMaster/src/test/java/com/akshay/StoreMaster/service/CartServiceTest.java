@@ -5,13 +5,15 @@ import com.akshay.StoreMaster.entity.Cart;
 import com.akshay.StoreMaster.entity.CartItem;
 import com.akshay.StoreMaster.entity.Product;
 import com.akshay.StoreMaster.entity.User;
-import com.akshay.StoreMaster.repository.CartItemRepositoty;
+import com.akshay.StoreMaster.repository.CartItemRepository;
 import com.akshay.StoreMaster.repository.CartRepository;
 import com.akshay.StoreMaster.repository.ProductRepository;
 import com.akshay.StoreMaster.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
+import java.math.BigDecimal;
 import java.util.Optional;
 import static org.mockito.Mockito.*;
 
@@ -27,7 +29,7 @@ public class CartServiceTest {
     @Mock
     private CartRepository cartRepository;
     @Mock
-    private CartItemRepositoty cartItemRepositoty;
+    private CartItemRepository cartItemRepository;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +46,7 @@ public class CartServiceTest {
 
         Product product = new Product();
         product.setProduct_Id(100L);
-        product.setPrice(50);
+        product.setPrice(BigDecimal.valueOf(50));
 
         User user = new User();
         user.setId(1L);
@@ -63,6 +65,6 @@ public class CartServiceTest {
 
         // Assert
         verify(cartRepository, times(2)).save(any(Cart.class));
-        verify(cartItemRepositoty, never()).save(any(CartItem.class)); // new item is not saved directly
+        verify(cartItemRepository, never()).save(any(CartItem.class)); // new item is not saved directly
     }
 }
