@@ -24,6 +24,6 @@ public class User {
 
     private String role;
 
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
 }

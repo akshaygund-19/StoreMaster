@@ -12,6 +12,8 @@ import com.akshay.StoreMaster.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
+import java.math.BigDecimal;
 import java.util.Optional;
 import static org.mockito.Mockito.*;
 
@@ -44,7 +46,7 @@ public class CartServiceTest {
 
         Product product = new Product();
         product.setProduct_Id(100L);
-        product.setPrice(50);
+        product.setPrice(BigDecimal.valueOf(50));
 
         User user = new User();
         user.setId(1L);

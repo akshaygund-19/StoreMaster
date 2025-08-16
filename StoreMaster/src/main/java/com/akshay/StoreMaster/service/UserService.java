@@ -32,7 +32,7 @@ public class UserService {
             user.setName(userRegistrationDTO.getName());
             user.setEmail(userRegistrationDTO.getEmail());
             user.setRole("ROLE_USER");
-            user.setCreated_at(LocalDateTime.now());
+            user.setCreatedAt(LocalDateTime.now());
             User savedUser = userRepository.save(user);
 
             UserResponseDTO responseDTO = new UserResponseDTO();

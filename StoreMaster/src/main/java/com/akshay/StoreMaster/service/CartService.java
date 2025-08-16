@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class CartService {
             CartItem item = existingItem.get();
             log.info("Product already in cart. Updating quantity. Old quantity: {}, adding: {}", item.getQuantity(), addCartDTO.getQuantity());
             item.setQuantity(item.getQuantity() + addCartDTO.getQuantity());
-            item.setPrice(item.getQuantity() * product.getPrice());
+            item.setPrice(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
             log.info("Updated CartItem: productId: {}, quantity: {}, price: {}", item.getProduct().getProduct_Id(), item.getQuantity(), item.getPrice());
             cartItemRepository.save(item);
         } else {
@@ -70,7 +71,7 @@ public class CartService {
             newItem.setProduct(product);
             newItem.setQuantity(addCartDTO.getQuantity());
             log.info("Quantity: {}, Prize: {}", addCartDTO.getQuantity(), product.getPrice());
-            newItem.setPrice(addCartDTO.getQuantity() * product.getPrice());
+            newItem.setPrice(product.getPrice().multiply(BigDecimal.valueOf(addCartDTO.getQuantity())));
             log.info("item prize: {}", newItem.getPrice());
             newItem.setCart(cart);
             cart.getCartItemList().add(newItem);
@@ -80,7 +81,9 @@ public class CartService {
             log.info("CartItem - Product ID: {}, Name: {}, Quantity: {}, Price: {}", item.getProduct().getProduct_Id(), item.getProduct().getName(), item.getQuantity(), item.getPrice());
         }
 
-        double total = cart.getCartItemList().stream().mapToDouble(CartItem::getPrice).sum();
+        BigDecimal total = cart.getCartItemList().stream().
+                map(CartItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         cart.setTotalPrice(total);
         cartRepository.save(cart);
@@ -127,9 +130,9 @@ public class CartService {
 
         cart.getCartItemList().remove(itemToRemove.get());
 
-        double total = cart.getCartItemList().stream()
-                .mapToDouble(CartItem::getPrice)
-                .sum();
+        BigDecimal total = cart.getCartItemList().stream()
+                .map(CartItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         cart.setTotalPrice(total);
         cartRepository.save(cart);
