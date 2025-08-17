@@ -67,34 +67,17 @@ public class OrderServiceImpl implements OrderService{
         order.setItems(orderItems);
 
         BigDecimal total = orderItems.stream()
-                .map(item -> {
-                    Product product = productRepository.findById(item.getProductId()).orElseThrow();
-                    return product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-                })
+                .map(OrderItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         order.setTotal(total);
         order.setCreatedAt(LocalDateTime.now());
 
         Order savedOrder = orderRepository.save(order);
 
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setOrderId(order.getId());
-        dto.setUserId(order.getUserId());
-        dto.setTotal(order.getTotal());
-        dto.setStatus(order.getStatus());
-        dto.setCreatedAt(order.getCreatedAt());
-
-        dto.setItems(order.getItems().stream()
-                .map(item -> new OrderItemResponseDTO(
-                        item.getId(),
-                        item.getQuantity(),
-                        item.getPrice()
-                ))
-                .toList());
-
         cart.getCartItemList().clear();
         cartRepository.save(cart);
-        return dto;
+        return mapToOrderResponseDTO(savedOrder);
     }
 
     @Override
@@ -103,14 +86,32 @@ public class OrderServiceImpl implements OrderService{
                 .orElseThrow(() -> new RuntimeException("Order Not found"));
         order.setStatus(orderStatus);
         Order updatedOrder = orderRepository.save(order);
+        return mapToOrderResponseDTO(updatedOrder);
+    }
 
+    @Override
+    @Transactional
+    public List<OrderResponseDTO> getMyOrders(Long userId) {
+        return orderRepository.findByUserId(userId).stream()
+                .map(this::mapToOrderResponseDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<OrderResponseDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::mapToOrderResponseDTO)
+                .toList();
+    }
+
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
         OrderResponseDTO dto = new OrderResponseDTO();
         dto.setOrderId(order.getId());
         dto.setUserId(order.getUserId());
         dto.setTotal(order.getTotal());
         dto.setStatus(order.getStatus());
         dto.setCreatedAt(order.getCreatedAt());
-
         dto.setItems(order.getItems().stream()
                 .map(item -> new OrderItemResponseDTO(
                         item.getId(),
@@ -120,55 +121,4 @@ public class OrderServiceImpl implements OrderService{
                 .toList());
         return dto;
     }
-
-    @Override
-    @Transactional
-    public List<OrderResponseDTO> getMyOrders(Long userId) {
-        return orderRepository.findByUserId(userId)
-                .stream()
-                .map(order -> {
-                    OrderResponseDTO dto = new OrderResponseDTO();
-                    dto.setOrderId(order.getId());
-                    dto.setUserId(order.getUserId());
-                    dto.setTotal(order.getTotal());
-                    dto.setStatus(order.getStatus());
-                    dto.setCreatedAt(order.getCreatedAt());
-
-                    dto.setItems(order.getItems().stream()
-                            .map(item -> new OrderItemResponseDTO(
-                                    item.getId(),
-                                    item.getQuantity(),
-                                    item.getPrice()
-                            ))
-                            .toList());
-                    return dto;
-                }).toList();
-    }
-
-    @Override
-    @Transactional
-    public List<OrderResponseDTO> getAllOrders() {
-        return orderRepository.findAll()
-                .stream()
-                .map(order -> {
-                    OrderResponseDTO dto = new OrderResponseDTO();
-                    dto.setOrderId(order.getId());
-                    dto.setUserId(order.getUserId());
-                    dto.setTotal(order.getTotal());
-                    dto.setStatus(order.getStatus());
-                    dto.setCreatedAt(order.getCreatedAt());
-
-                    dto.setItems(order.getItems().stream()
-                            .map(item -> new OrderItemResponseDTO(
-                                    item.getId(),
-                                    item.getQuantity(),
-                                    item.getPrice()
-                            ))
-                            .toList());
-
-                    return dto;
-                })
-                .toList();
-    }
-
 }
