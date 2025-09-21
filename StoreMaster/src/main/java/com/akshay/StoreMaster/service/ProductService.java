@@ -3,6 +3,7 @@ package com.akshay.StoreMaster.service;
 import com.akshay.StoreMaster.dto.ProductRequestDTO;
 import com.akshay.StoreMaster.dto.ProductResponseDTO;
 import com.akshay.StoreMaster.entity.Product;
+import com.akshay.StoreMaster.exception.ProductNotFoundException;
 import com.akshay.StoreMaster.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class ProductService {
     public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
         Optional<Product> checkProduct = productRepository.findById(productId);
         if (checkProduct.isEmpty()) {
-            throw new IllegalArgumentException("Product not found ");
+            throw new ProductNotFoundException(String.format("Product Not found: ID=%d" , productId));
         }
 
         Product product = checkProduct.get();
@@ -97,7 +98,8 @@ public class ProductService {
     public void deleteProduct(Long productId){
         Optional<Product> checkProduct = productRepository.findById(productId);
         if (checkProduct.isEmpty()){
-            throw new IllegalArgumentException("Product not found ");
+            throw new ProductNotFoundException(
+                    String.format("Product Not found: ID=%d" , productId));
         }
         checkProduct.ifPresent(productRepository::delete);
     }
@@ -124,7 +126,8 @@ public class ProductService {
        Optional<Product> product = productRepository.findById(productId);
 
        if (product.isEmpty()){
-           throw new IllegalArgumentException("Product Not found: ID{}" + productId);
+           throw new ProductNotFoundException(
+                   String.format("Product Not found: ID=%d" , productId));
        }
 
        Product foundProduct = product.get();

@@ -7,6 +7,7 @@ import com.akshay.StoreMaster.entity.Cart;
 import com.akshay.StoreMaster.entity.Order;
 import com.akshay.StoreMaster.entity.OrderItem;
 import com.akshay.StoreMaster.entity.Product;
+import com.akshay.StoreMaster.exception.ProductNotFoundException;
 import com.akshay.StoreMaster.repository.CartRepository;
 import com.akshay.StoreMaster.repository.OrderRepository;
 import com.akshay.StoreMaster.repository.ProductRepository;
@@ -53,7 +54,8 @@ public class OrderServiceImpl implements OrderService{
         List<OrderItem> orderItems = cart.getCartItemList().stream()
                 .map(cartItem -> {
                     Product product = productRepository.findById(cartItem.getProduct().getProduct_Id())
-                            .orElseThrow(() -> new RuntimeException("Product Not found"));
+                            .orElseThrow(() -> new ProductNotFoundException(
+                            String.format("Product Not found: ID=%d" , cartItem.getProduct().getProduct_Id())));
                     log.info("Processing productId={} name={} requestedQty={} availableQty={}",
                             product.getProduct_Id(), product.getName(), cartItem.getQuantity(), product.getStock_quantity());
 

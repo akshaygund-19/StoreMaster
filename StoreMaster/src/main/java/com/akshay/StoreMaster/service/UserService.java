@@ -4,6 +4,7 @@ import com.akshay.StoreMaster.dto.UserLoginDTO;
 import com.akshay.StoreMaster.dto.UserRegistrationDTO;
 import com.akshay.StoreMaster.dto.UserResponseDTO;
 import com.akshay.StoreMaster.entity.User;
+import com.akshay.StoreMaster.exception.InvalidCredentialException;
 import com.akshay.StoreMaster.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,10 @@ public class UserService {
     public void login(UserLoginDTO userLoginDTO){
         User checkUser = userRepository.findByEmail(userLoginDTO.getEmail());
         if (checkUser == null){
-            throw new IllegalArgumentException("Invalid Credential Email is not valid ");
+            throw new InvalidCredentialException("Invalid Credential Email is not valid ");
         }
         if (!bCryptPasswordEncoder.matches(userLoginDTO.getPassword(), checkUser.getPassword())) {
-            throw new IllegalArgumentException("Invalid Credential: Password Mismatch");
+            throw new InvalidCredentialException("Invalid Credential: Password Mismatch");
         }
     }
 
