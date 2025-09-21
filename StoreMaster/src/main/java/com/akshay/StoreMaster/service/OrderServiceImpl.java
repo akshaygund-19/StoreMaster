@@ -7,16 +7,19 @@ import com.akshay.StoreMaster.entity.Cart;
 import com.akshay.StoreMaster.entity.Order;
 import com.akshay.StoreMaster.entity.OrderItem;
 import com.akshay.StoreMaster.entity.Product;
+import com.akshay.StoreMaster.exception.ProductNotFoundException;
 import com.akshay.StoreMaster.repository.CartRepository;
 import com.akshay.StoreMaster.repository.OrderRepository;
 import com.akshay.StoreMaster.repository.ProductRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService{
@@ -34,10 +37,13 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public OrderResponseDTO placeOrder(Long userId) {
+        log.info("Placing order for userId={}", userId);
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
+        log.info("Cart retrieved for userId={} with {} items", userId, cart.getCartItemList().size());
 
         if (cart.getCartItemList().isEmpty()){
+            log.info("Cart is empty for userId={}", userId);
             throw new RuntimeException("Cart is Empty");
         }
 
@@ -48,13 +54,19 @@ public class OrderServiceImpl implements OrderService{
         List<OrderItem> orderItems = cart.getCartItemList().stream()
                 .map(cartItem -> {
                     Product product = productRepository.findById(cartItem.getProduct().getProduct_Id())
-                            .orElseThrow(() -> new RuntimeException("Product Not found"));
+                            .orElseThrow(() -> new ProductNotFoundException(
+                            String.format("Product Not found: ID=%d" , cartItem.getProduct().getProduct_Id())));
+                    log.info("Processing productId={} name={} requestedQty={} availableQty={}",
+                            product.getProduct_Id(), product.getName(), cartItem.getQuantity(), product.getStock_quantity());
 
                     if (product.getStock_quantity() < cartItem.getQuantity()){
+                        log.info("Insufficient stock for productId={} name={} requested={} available={}",
+                                product.getProduct_Id(), product.getName(), cartItem.getQuantity(), product.getStock_quantity());
                         throw new RuntimeException("Insufficient stock for product" + product.getName());
                     }
                     product.setStock_quantity(product.getStock_quantity() - cartItem.getQuantity());
                     productRepository.save(product);
+                    log.info("Reduced stock for productId={} newQty={}", product.getProduct_Id(), product.getStock_quantity());
 
                     OrderItem item =  new OrderItem();
                     item.setProductId(cartItem.getProduct().getProduct_Id());
@@ -69,30 +81,37 @@ public class OrderServiceImpl implements OrderService{
         BigDecimal total = orderItems.stream()
                 .map(OrderItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        log.info("Calculated order total={} for userId={}", total, userId);
 
         order.setTotal(total);
         order.setCreatedAt(LocalDateTime.now());
 
         Order savedOrder = orderRepository.save(order);
+        log.info("Order placed successfully. orderId={} userId={}", savedOrder.getId(), userId);
 
         cart.getCartItemList().clear();
         cartRepository.save(cart);
+        log.info("Cleared cart for userId={}", userId);
         return mapToOrderResponseDTO(savedOrder);
     }
 
     @Override
     public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus orderStatus) {
+        log.info("Updating order status. orderId={} newStatus={}", orderId, orderStatus);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order Not found"));
         order.setStatus(orderStatus);
         Order updatedOrder = orderRepository.save(order);
+        log.info("Order status updated. orderId={} status={}", updatedOrder.getId(), updatedOrder.getStatus());
         return mapToOrderResponseDTO(updatedOrder);
     }
 
     @Override
     @Transactional
     public List<OrderResponseDTO> getMyOrders(Long userId) {
-        return orderRepository.findByUserId(userId).stream()
+        List<Order> orders = orderRepository.findByUserId(userId);
+        log.info("Found {} orders for userId={}", orders.size(), userId);
+        return orders.stream()
                 .map(this::mapToOrderResponseDTO)
                 .toList();
     }
@@ -100,12 +119,15 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional
     public List<OrderResponseDTO> getAllOrders() {
-        return orderRepository.findAll().stream()
+        List<Order> orders = orderRepository.findAll();
+        log.info("Found {} total orders", orders.size());
+        return orders.stream()
                 .map(this::mapToOrderResponseDTO)
                 .toList();
     }
 
     private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        log.info("Mapping Order to DTO. orderId={}", order.getId());
         OrderResponseDTO dto = new OrderResponseDTO();
         dto.setOrderId(order.getId());
         dto.setUserId(order.getUserId());
